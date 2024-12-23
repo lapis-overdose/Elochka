@@ -1,3 +1,4 @@
+'''
 def to_lower_case(s):
     # Convert the input string to lowercase
     return s.lower()
@@ -64,3 +65,5 @@ else:
     else:
         # If the game ends without guessing the number, print the game over message
         print("Game over, YOU LOST!")
+'''
+
