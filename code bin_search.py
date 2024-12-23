@@ -1,6 +1,8 @@
-import pygame
 import sys
+import pygame
+from pygame.examples.aliens import SCORE
 
+from button import Button
 
 
 def to_lower_case(s):
@@ -77,7 +79,6 @@ pygame.display.set_caption("Guessing Game")
 
 #pygame.display.set_icon(pygame.image.load(ICON)
 
-BACKGROUND = pygame.image.load("Sprites/welcome.png")
 
 
 FONT = pygame.font.SysFont("arial", 70)
@@ -87,26 +88,103 @@ text_rect = text.get_rect(center=(WIDTH/2, 150))
 
 CLOCK = pygame.time.Clock()
 
-'''
+BG = pygame.image.load("Sprites/welcome.png")
+INGAMEBG = pygame.image.load("Sprites/in_game.png")
+GAMEOVER = pygame.image.load("Sprites/end.png")
+
+
+def get_font(size):  # Returns Press-Start-2P in the desired size
+    return pygame.font.Font("Fonts/filicudi.otf", size)
+
+
+
+def game_over():
+    while True:
+        PLAY_MOUSE_POS = pygame.mouse.get_pos()
+
+
+        SCREEN.blit(GAMEOVER, (0, 0))
+
+        GUESSING_TEXT = get_font(45).render("1337", True, "White")
+        GUESSING_RECT = GUESSING_TEXT.get_rect(center=(630, 299))
+        SCREEN.blit(GUESSING_TEXT, GUESSING_RECT)
+
+        STEPS_TEXT = get_font(45).render("1337", True, "White")
+        STEPS_RECT = STEPS_TEXT.get_rect(center=(630, 407))
+        SCREEN.blit(STEPS_TEXT, STEPS_RECT)
+
+        LIES_TEXT = get_font(45).render("234", True, "White")
+        LIES_RECT = LIES_TEXT.get_rect(center=(310, 407))
+        SCREEN.blit(LIES_TEXT, LIES_RECT)
+
+
+
+
+        PLAY_BACK = Button(image=None, pos=(640, 520),
+                            text_input="BACK", font=get_font(75), base_color="White", hovering_color="Green")
+        PLAY_BACK.changeColor(PLAY_MOUSE_POS)
+        PLAY_BACK.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
+                    main_menu()
+
+        pygame.display.update()
+
+
+def game_process():
+    while True:
+        PLAY_MOUSE_POS = pygame.mouse.get_pos()
+
+
+        SCREEN.blit(INGAMEBG, (0, 0))
+
+        PLAY_TEXT = get_font(45).render("213", True, "White")
+        PLAY_RECT = PLAY_TEXT.get_rect(center=(198, 140))
+        SCREEN.blit(PLAY_TEXT, PLAY_RECT)
+
+        HIGHER_BUTTON = Button(image=pygame.image.load("Sprites/higher_button.png"), pos=(198, 369),
+                            text_input=None, font=get_font(75), base_color="White", hovering_color="Green")
+
+        HIGHER_BUTTON.changeColor(PLAY_MOUSE_POS)
+        HIGHER_BUTTON.update(SCREEN)
+
+        LOWER_BUTTON = Button(image=pygame.image.load("Sprites/lower_button.png"), pos=(602, 369),
+                             text_input=None, font=get_font(63), base_color="White", hovering_color="Black")
+
+        LOWER_BUTTON.changeColor(PLAY_MOUSE_POS)
+        LOWER_BUTTON.update(SCREEN)
+
+        HIGHER_BUTTON.changeColor(PLAY_MOUSE_POS)
+        HIGHER_BUTTON.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if HIGHER_BUTTON.checkForInput(PLAY_MOUSE_POS):
+                    main_menu()
+
+        pygame.display.update()
+
+
 def main_menu():
     while True:
         SCREEN.blit(BG, (0, 0))
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-        MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
-        MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
-        PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(640, 250),
-                             text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(640, 400),
-                                text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(640, 550),
-                             text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+        START_BUTTON = Button(image=pygame.image.load("Sprites/start_button.png"), pos=(620, 339),
+                             text_input="Start", font=get_font(65), base_color="White", hovering_color="Black")
 
-        SCREEN.blit(MENU_TEXT, MENU_RECT)
 
-        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+        for button in [START_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(SCREEN)
 
@@ -115,29 +193,10 @@ def main_menu():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    play()
-                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    options()
-                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    pygame.quit()
-                    sys.exit()
-'''
-
-def game_init():
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        # Код отображения
-
-        SCREEN.fill(("white"))
-        SCREEN.blit(text, text_rect)
-        SCREEN.blit(BACKGROUND, (0, 0))
+                if START_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    game_process()
 
         pygame.display.update()
 
-        CLOCK.tick(30)
 
-game_init()
+main_menu()
