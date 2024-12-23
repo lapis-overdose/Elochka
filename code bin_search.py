@@ -1,6 +1,6 @@
 import pygame
 import sys
-
+import pygame_gui
 
 
 def to_lower_case(s):
@@ -71,6 +71,7 @@ pygame.init()
 
 WIDTH, HEIGHT = 800, 600
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
+MANAGER = pygame_gui.UIManager((WIDTH, HEIGHT))
 pygame.display.set_caption("Guessing Game")
 
 #ICON = pygame.image.load("icon.png")
@@ -78,15 +79,12 @@ pygame.display.set_caption("Guessing Game")
 #pygame.display.set_icon(pygame.image.load(ICON)
 
 BACKGROUND = pygame.image.load("Sprites/welcome.png")
-
-
 FONT = pygame.font.SysFont("arial", 70)
 text = FONT.render("Guessing Game", True, (0, 0, 0))
 text_rect = text.get_rect(center=(WIDTH/2, 150))
-
+TEXT_INPUT = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((55,300),(445,80)),manager=MANAGER,object_id='#main_text_entry')
 
 CLOCK = pygame.time.Clock()
-
 '''
 def main_menu():
     while True:
@@ -126,18 +124,20 @@ def main_menu():
 
 def game_init():
     while True:
+        UI_REFRESH_RATE = CLOCK.tick(30)/1000 # FPS
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        # Код отображения
 
+            MANAGER.process_events(event)
+        # Код отображения
+        MANAGER.update(UI_REFRESH_RATE)
         SCREEN.fill(("white"))
         SCREEN.blit(text, text_rect)
         SCREEN.blit(BACKGROUND, (0, 0))
-
+        MANAGER.draw_ui(SCREEN)
         pygame.display.update()
 
-        CLOCK.tick(30)
 
 game_init()
