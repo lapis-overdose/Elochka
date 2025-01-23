@@ -1,187 +1,108 @@
 import heapq
 
-class Node:
+# Classes (Node, LinkedList, Stack, Queue, MinHeap) remain the same
+# The recursive guessing game remains the same
 
-    def __init__(self, data):
-        self.data = data
-        self.next = None
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        for j in range(n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    return arr
 
-class LinkedList:
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
 
-    def __init__(self):
-        self.head = None
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
 
-    def append(self, data):
+    return merge(left, right)
 
-        if not self.head:
-            self.head = Node(data)
+def merge(left, right):
+    merged = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            merged.append(left[i])
+            i += 1
         else:
-            current = self.head
-            while current.next:
-                current = current.next
-            current.next = Node(data)
+            merged.append(right[j])
+            j += 1
+    merged.extend(left[i:])
+    merged.extend(right[j:])
+    return merged
 
-    def display(self):
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
 
-        current = self.head
-        data_list = []
-        while current:
-            data_list.append(current.data)
-            current = current.next
-        return data_list
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
 
-class Stack:
+    return quick_sort(left) + middle + quick_sort(right)
 
-    def __init__(self):
-        self.stack = []
+def linear_search(arr, target):
+    for index, value in enumerate(arr):
+        if value == target:
+            return index
+    return -1
 
-    def push(self, data):
+if __name__ == "__main__":
+    data = [64, 34, 25, 12, 22, 11, 90]
+    print("Original Data:", data)
 
-        self.stack.append(data)
+    bubble_sorted = bubble_sort(data.copy())
+    print("Bubble Sort Result:", bubble_sorted)
 
-    def pop(self):
+    merge_sorted = merge_sort(data.copy())
+    print("Merge Sort Result:", merge_sorted)
 
-        if not self.is_empty():
-            return self.stack.pop()
-        return None
+    quick_sorted = quick_sort(data.copy())
+    print("Quick Sort Result:", quick_sorted)
 
-    def peek(self):
-
-        if not self.is_empty():
-            return self.stack[-1]
-        return None
-
-    def is_empty(self):
-
-        return len(self.stack) == 0
-
-    def display(self):
-
-        return self.stack
-
-class Queue:
-
-    def __init__(self):
-        self.queue = []
-
-    def enqueue(self, data):
-
-        self.queue.append(data)
-
-    def dequeue(self):
-
-        if not self.is_empty():
-            return self.queue.pop(0)
-        return None
-
-    def is_empty(self):
-
-        return len(self.queue) == 0
-
-    def display(self):
-
-        return self.queue
-
-
-def to_lower_case(s):
-    return s.lower()
-
-def recurs(left, right, guessing_num, steps, lies_list, steps_array, guess_stack, response_queue):
-
-    if left > right:
-        print("Your number is outside the range!")
-        return -1
-
-
-    steps += 1
-    steps_array.append(steps)
-
-
-    mid = left + (right - left) // 2
-
-
-    guess_stack.push(mid)
-
-
-    response = input(f"Is your number {mid}? (enter 'yes', 'higher', or 'lower'): ")
-    response = to_lower_case(response)
-    response_queue.enqueue(response)
-
-
-    if response == "yes":
-        if mid == guessing_num:
-            return mid
-        else:
-            print("You're lying! I caught you!")
-            lies_list.append("Lie Detected")
-            return -1
-
-    elif response == "higher":
-        if mid >= guessing_num:
-            print(f"You're lying! Your number can't be higher than {mid}!")
-            lies_list.append("Lie Detected")
-            return -1
-        return recurs(mid + 1, right, guessing_num, steps, lies_list, steps_array, guess_stack, response_queue)
-
-    elif response == "lower":
-        if mid <= guessing_num:
-            print(f"You're lying! Your number can't be lower than {mid}!")
-            lies_list.append("Lie Detected")
-            return -1
-        return recurs(left, mid - 1, guessing_num, steps, lies_list, steps_array, guess_stack, response_queue)
-
+    search_target = 22
+    search_result = linear_search(data, search_target)
+    if search_result != -1:
+        print(f"Linear Search: Found {search_target} at index {search_result}")
     else:
-        print("Invalid input. Please answer 'yes', 'higher', or 'lower'.")
-        return recurs(left, right, guessing_num, steps, lies_list, steps_array, guess_stack, response_queue)
+        print(f"Linear Search: {search_target} not found")
 
-class MinHeap:
-    def __init__(self):
-        self.heap = []
+    left = 0
+    right = 100
 
-    def insert(self, val):
-        heapq.heappush(self.heap, val)
+    steps_array = []
+    lies_list = LinkedList()
+    guess_stack = Stack()
+    response_queue = Queue()
+    priority_heap = MinHeap()
 
-    def extract_min(self):
-        if self.heap:
-            return heapq.heappop(self.heap)
-        return None
-
-    def display(self):
-        return self.heap
-
-
-left = 0
-right = 100
-
-steps_array = []
-lies_list = LinkedList()
-guess_stack = Stack()
-response_queue = Queue()
-priority_heap = MinHeap()
-
-try:
-    guessing_num = int(input("Please enter your number (between 0 and 100): "))
-    if guessing_num < 0 or guessing_num > 100:
-        print("Invalid number. Please choose a number between 0 and 100.")
-    else:
-        result = recurs(left, right, guessing_num, 0, lies_list, steps_array, guess_stack, response_queue)
-        if result != -1:
-            print(f"I guessed your number! It's {result}!")
-            print(f"It took only {len(steps_array)} steps to guess your number.")
+    try:
+        guessing_num = int(input("Please enter your number (between 0 and 100): "))
+        if guessing_num < 0 or guessing_num > 100:
+            print("Invalid number. Please choose a number between 0 and 100.")
         else:
-            print("Game over, YOU LOST!")
+            result = recurs(left, right, guessing_num, 0, lies_list, steps_array, guess_stack, response_queue)
+            if result != -1:
+                print(f"I guessed your number! It's {result}!")
+                print(f"It took only {len(steps_array)} steps to guess your number.")
+            else:
+                print("Game over, YOU LOST!")
 
-        print(f"Steps taken during the game: {steps_array}")
-        print(f"Guesses made (stack): {guess_stack.display()}")
-        print(f"Responses recorded (queue): {response_queue.display()}")
-        print(f"Count of lies detected: {len(lies_list.display())}")
-        if lies_list.display():
-            print(f"Lies detected at these points: {lies_list.display()}")
+            print(f"Steps taken during the game: {steps_array}")
+            print(f"Guesses made (stack): {guess_stack.display()}")
+            print(f"Responses recorded (queue): {response_queue.display()}")
+            print(f"Count of lies detected: {len(lies_list.display())}")
+            if lies_list.display():
+                print(f"Lies detected at these points: {lies_list.display()}")
 
-        # Демонстрация хип
-        for i in range(5):
-            priority_heap.insert(i * 10)
-        print(f"Heap after insertions: {priority_heap.display()}")
-        print(f"Extracted min from heap: {priority_heap.extract_min()}")
-except ValueError:
-    print("Invalid input. Please enter a valid number.")
+            for i in range(5):
+                priority_heap.insert(i * 10)
+            print(f"Heap after insertions: {priority_heap.display()}")
+            print(f"Extracted min from heap: {priority_heap.extract_min()}")
+    except ValueError:
+        print("Invalid input. Please enter a valid number.")
